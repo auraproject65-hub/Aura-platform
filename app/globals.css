@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  --background: #0B0F19;
+  --foreground: #F8FBFF;
+}
+
+body {
+  background: radial-gradient(circle at top, rgba(0,229,255,0.12), transparent 18%), #0B0F19;
+  color: var(--foreground);
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+.glass-panel {
+  background: linear-gradient(135deg, rgba(255,255,255,0.09), rgba(255,255,255,0.02));
+  backdrop-filter: blur(18px);
+}
+
+.data-tour-highlight {
+  outline: 2px solid rgba(0, 229, 255, 0.95);
+  box-shadow: 0 0 0 8px rgba(0, 229, 255, 0.14), 0 22px 60px rgba(0, 229, 255, 0.18);
+  border-radius: 28px;
+  transition: all 180ms ease;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0,229,255,0.35);
+  border-radius: 999px;
+}
