@@ -40,13 +40,13 @@ export function NotificationBell() {
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-80">
+      <DropdownMenuContent align="end" className="glass-panel w-88 border border-white/10 bg-slate-950/85 p-2">
         {notifications.length === 0 ? (
           <DropdownMenuItem disabled>No notifications yet.</DropdownMenuItem>
         ) : (
           notifications.map((item) => (
-            <DropdownMenuItem key={item.id} onClick={() => markRead(item.id)} className="flex flex-col items-start gap-1">
-              <span className="font-semibold">{item.title}</span>
+            <DropdownMenuItem key={item.id} onClick={() => markRead(item.id)} className="flex flex-col items-start gap-1 rounded-2xl px-3 py-3">
+              <span className="font-semibold text-white">{item.title}</span>
               <span className="text-xs text-slate-200">{item.message}</span>
               {!item.read && <span className="text-[10px] uppercase tracking-[0.2em] text-aura-cyan">Unread</span>}
             </DropdownMenuItem>

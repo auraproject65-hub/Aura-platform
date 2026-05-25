@@ -4,29 +4,51 @@
 
 :root {
   color-scheme: dark;
-  --background: #0B0F19;
-  --foreground: #F8FBFF;
+  --background: #0B0E14;
+  --foreground: #F5F6F8;
+}
+
+* {
+  @apply border-white/10;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: radial-gradient(circle at top, rgba(0,229,255,0.12), transparent 18%), #0B0F19;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(0, 229, 255, 0.1), transparent 18%),
+    radial-gradient(circle at top right, rgba(201, 169, 110, 0.12), transparent 16%),
+    linear-gradient(180deg, #0B0E14 0%, #111827 60%, #0B0E14 100%);
   color: var(--foreground);
+  transition: background-color 500ms ease, color 500ms ease, border-color 500ms ease;
 }
 
 .dark {
   color-scheme: dark;
 }
 
-.glass-panel {
-  background: linear-gradient(135deg, rgba(255,255,255,0.09), rgba(255,255,255,0.02));
-  backdrop-filter: blur(18px);
+::selection {
+  background: rgba(0, 229, 255, 0.24);
+  color: #f5f6f8;
 }
 
-.data-tour-highlight {
+.glass-panel {
+  background: linear-gradient(135deg, rgba(245, 246, 248, 0.12), rgba(255, 255, 255, 0.03));
+  backdrop-filter: blur(18px);
+  box-shadow: 0 22px 60px rgba(3, 7, 18, 0.4);
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[role='button']:focus-visible {
   outline: 2px solid rgba(0, 229, 255, 0.95);
-  box-shadow: 0 0 0 8px rgba(0, 229, 255, 0.14), 0 22px 60px rgba(0, 229, 255, 0.18);
-  border-radius: 28px;
-  transition: all 180ms ease;
+  outline-offset: 2px;
 }
 
 ::-webkit-scrollbar {
@@ -34,6 +56,6 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0,229,255,0.35);
+  background: linear-gradient(180deg, rgba(0, 229, 255, 0.75), rgba(201, 169, 110, 0.7));
   border-radius: 999px;
 }

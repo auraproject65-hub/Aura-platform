@@ -5,6 +5,7 @@ import { FileSpreadsheet, FileText, ImageIcon, Table2, UploadCloud } from 'lucid
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { SkeletonBlock } from '@/components/loading-skeleton';
 
 interface DatasetRecord {
   id: string;
@@ -23,11 +24,13 @@ export default function DataRoomPage() {
   const [file, setFile] = useState<File | null>(null);
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   const loadDatasets = async () => {
     const response = await fetch('/api/upload');
     const data = await response.json();
     setDatasets(data.datasets || []);
+    setInitialLoading(false);
   };
 
   useEffect(() => {
@@ -63,7 +66,7 @@ export default function DataRoomPage() {
 
   return (
     <div className="space-y-6">
-      <Card className="border-white/10 bg-white/5 text-white">
+      <Card className="border-white/10 bg-white/[0.03] text-white">
         <CardHeader>
           <CardTitle>Multi-format Data Room</CardTitle>
           <CardDescription className="text-slate-200">Accept CSV, XLSX, PDF, JPG, and PNG uploads with in-memory previews and AI-ready storage.</CardDescription>
@@ -74,24 +77,32 @@ export default function DataRoomPage() {
             <Input type="file" accept=".csv,.xlsx,.xls,.pdf,.jpg,.jpeg,.png" onChange={(event) => setFile(event.target.files?.[0] || null)} />
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <Button onClick={uploadFile} disabled={loading}><UploadCloud className="mr-2 h-4 w-4" />{loading ? 'Processing...' : 'Upload and analyse'}</Button>
+            <Button onClick={uploadFile} disabled={loading}>
+              <UploadCloud className="mr-2 h-4 w-4" />
+              {loading ? 'Processing...' : 'Upload and analyse'}
+            </Button>
             <span className="text-sm text-slate-200">{status}</span>
           </div>
         </CardContent>
       </Card>
 
-      <div className="grid gap-4 xl:grid-cols-[0.9fr_1.1fr]">
-        <Card className="border-white/10 bg-white/5 text-white">
+      <div className="grid gap-4 xl:grid-cols-[0.95fr_1.05fr]">
+        <Card className="border-white/10 bg-white/[0.03] text-white">
           <CardHeader>
             <CardTitle>Recent uploads</CardTitle>
             <CardDescription className="text-slate-200">Stored in-memory for the current session.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            {datasets.length === 0 ? (
+            {initialLoading ? (
+              <>
+                <SkeletonBlock className="h-16" />
+                <SkeletonBlock className="h-16" />
+              </>
+            ) : datasets.length === 0 ? (
               <p className="text-sm text-slate-200">No files uploaded yet.</p>
             ) : (
               datasets.slice(0, 4).map((dataset) => (
-                <div key={dataset.id} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                <div key={dataset.id} className="rounded-[24px] border border-white/10 bg-white/5 px-4 py-3">
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       <p className="font-semibold text-white">{dataset.filename}</p>
@@ -105,13 +116,15 @@ export default function DataRoomPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-white/10 bg-white/5 text-white">
+        <Card className="border-white/10 bg-white/[0.03] text-white">
           <CardHeader>
             <CardTitle>Preview</CardTitle>
-            <CardDescription className="text-slate-200">CSV and XLSX rows render as table previews; other files show a placeholder summary.</CardDescription>
+            <CardDescription className="text-slate-200">CSV and XLSX rows render as table previews; other files show a summary.</CardDescription>
           </CardHeader>
           <CardContent>
-            {recentPreview ? (
+            {initialLoading ? (
+              <SkeletonBlock className="h-56" />
+            ) : recentPreview ? (
               recentPreview.previewType === 'table' ? (
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
@@ -130,7 +143,7 @@ export default function DataRoomPage() {
                   </table>
                 </div>
               ) : (
-                <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-4">
+                <div className="rounded-[24px] border border-white/10 bg-slate-950/60 p-4">
                   <p className="text-sm text-slate-200">{recentPreview.contentPreview}</p>
                   <p className="mt-3 text-sm font-semibold text-white">{recentPreview.filename}</p>
                 </div>

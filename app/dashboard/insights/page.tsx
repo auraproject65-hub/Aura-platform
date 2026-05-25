@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Download, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { SkeletonBlock } from '@/components/loading-skeleton';
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 interface AnalysisResult {
@@ -44,11 +45,16 @@ const stacked = [
 export default function InsightsPage() {
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [tab, setTab] = useState<'Forecast' | 'Cohort Analysis' | 'Heatmap' | 'Solutions'>('Forecast');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch('/api/analysis')
       .then((response) => response.json())
-      .then((data) => setAnalysis(data.analysis || null));
+      .then((data) => {
+        setAnalysis(data.analysis || null);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, []);
 
   const forecastData = useMemo(() => (analysis?.forecast || [25, 30, 38, 44, 48, 52]).map((value, index) => ({ month: `M${index + 1}`, value })), [analysis]);
@@ -57,9 +63,25 @@ export default function InsightsPage() {
     { name: 'Loopholes', value: analysis?.loopholes.length ? analysis.loopholes.length * 10 : 18 },
   ], [analysis]);
 
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <SkeletonBlock className="h-20" />
+        <div className="grid gap-4 xl:grid-cols-2">
+          <SkeletonBlock className="h-72" />
+          <SkeletonBlock className="h-72" />
+        </div>
+        <div className="grid gap-4 xl:grid-cols-2">
+          <SkeletonBlock className="h-64" />
+          <SkeletonBlock className="h-64" />
+        </div>
+      </div>
+    );
+  }
+
   if (!analysis) {
     return (
-      <Card className="border-white/10 bg-white/5 text-white">
+      <Card className="border-white/10 bg-white/[0.03] text-white">
         <CardHeader>
           <CardTitle>No analysis yet</CardTitle>
           <CardDescription className="text-slate-200">Upload a file and run an analysis to unlock the dashboard insights.</CardDescription>
@@ -76,7 +98,7 @@ export default function InsightsPage() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <p className="text-sm uppercase tracking-[0.3em] text-aura-cyan">Insights</p>
-          <h1 className="mt-2 text-3xl font-semibold">Live intelligence for {analysis.industry}</h1>
+          <h1 className="mt-2 font-display text-3xl font-semibold">Live intelligence for {analysis.industry}</h1>
         </div>
         <Button variant="outline" onClick={() => window.print()}><Download className="mr-2 h-4 w-4" />Download Report</Button>
       </div>
@@ -89,7 +111,7 @@ export default function InsightsPage() {
 
       {tab === 'Forecast' && (
         <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
-          <Card className="border-white/10 bg-white/5 text-white">
+          <Card className="border-white/10 bg-white/[0.03] text-white">
             <CardHeader>
               <CardTitle>Forecast line chart</CardTitle>
               <CardDescription className="text-slate-200">Projected trajectory based on the latest stored analysis.</CardDescription>
@@ -108,7 +130,7 @@ export default function InsightsPage() {
           </Card>
 
           <div className="grid gap-4">
-            <Card className="border-white/10 bg-white/5 text-white">
+            <Card className="border-white/10 bg-white/[0.03] text-white">
               <CardHeader>
                 <CardTitle>Strengths vs loopholes</CardTitle>
                 <CardDescription className="text-slate-200">A quick conversion of opportunities and risks.</CardDescription>
@@ -126,12 +148,12 @@ export default function InsightsPage() {
               </CardContent>
             </Card>
 
-            <Card className="border-white/10 bg-white/5 text-white">
+            <Card className="border-white/10 bg-white/[0.03] text-white">
               <CardHeader>
                 <CardTitle>Motivation card</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="rounded-2xl border border-aura-cyan/20 bg-aura-cyan/10 p-4">
+                <div className="rounded-[24px] border border-aura-cyan/20 bg-aura-cyan/10 p-4">
                   <div className="flex items-center gap-2 text-aura-cyan"><Sparkles className="h-4 w-4" /> Executive insight</div>
                   <p className="mt-3 text-slate-100">{analysis.motivation}</p>
                 </div>
@@ -143,7 +165,7 @@ export default function InsightsPage() {
 
       {tab === 'Cohort Analysis' && (
         <div className="grid gap-4 xl:grid-cols-[1fr_0.8fr]">
-          <Card className="border-white/10 bg-white/5 text-white">
+          <Card className="border-white/10 bg-white/[0.03] text-white">
             <CardHeader>
               <CardTitle>Stacked area chart</CardTitle>
               <CardDescription className="text-slate-200">Premium view of forecast vs actual momentum.</CardDescription>
@@ -162,7 +184,7 @@ export default function InsightsPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-white/10 bg-white/5 text-white">
+          <Card className="border-white/10 bg-white/[0.03] text-white">
             <CardHeader>
               <CardTitle>Cohort table</CardTitle>
               <CardDescription className="text-slate-200">Snapshot of retention and expansion cohorts.</CardDescription>
@@ -194,7 +216,7 @@ export default function InsightsPage() {
       )}
 
       {tab === 'Heatmap' && (
-        <Card className="border-white/10 bg-white/5 text-white">
+        <Card className="border-white/10 bg-white/[0.03] text-white">
           <CardHeader>
             <CardTitle>Heatmap grid</CardTitle>
             <CardDescription className="text-slate-200">A simple premium view of performance intensity.</CardDescription>
@@ -202,7 +224,7 @@ export default function InsightsPage() {
           <CardContent>
             <div className="grid grid-cols-4 gap-3">
               {heatmap.flat().map((value, index) => (
-                <div key={`${value}-${index}`} className="rounded-xl border border-white/10 px-4 py-6 text-center" style={{ backgroundColor: `rgba(0, 229, 255, ${Math.max(0.2, value / 100)})`, color: '#08111F' }}>
+                <div key={`${value}-${index}`} className="rounded-[24px] border border-white/10 px-4 py-6 text-center" style={{ backgroundColor: `rgba(0, 229, 255, ${Math.max(0.2, value / 100)})`, color: '#08111F' }}>
                   {value}
                 </div>
               ))}
@@ -213,19 +235,19 @@ export default function InsightsPage() {
 
       {tab === 'Solutions' && (
         <div className="grid gap-4 xl:grid-cols-[0.8fr_1.1fr]">
-          <Card className="border-white/10 bg-white/5 text-white">
+          <Card className="border-white/10 bg-white/[0.03] text-white">
             <CardHeader>
               <CardTitle>Solutions list</CardTitle>
               <CardDescription className="text-slate-200">Actionable recommendations generated from the latest analysis.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               {analysis.solutions.map((solution) => (
-                <div key={solution} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">{solution}</div>
+                <div key={solution} className="rounded-[24px] border border-white/10 bg-white/5 px-4 py-3">{solution}</div>
               ))}
             </CardContent>
           </Card>
 
-          <Card className="border-white/10 bg-white/5 text-white">
+          <Card className="border-white/10 bg-white/[0.03] text-white">
             <CardHeader>
               <CardTitle>Decision matrix</CardTitle>
               <CardDescription className="text-slate-200">Prioritised actions and associated impact/risk.</CardDescription>

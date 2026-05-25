@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { motion, useSpring, useMotionValueEvent } from 'framer-motion';
 
 interface StatsCounterProps {
   value: number;
@@ -9,23 +10,23 @@ interface StatsCounterProps {
 }
 
 export function StatsCounter({ value, suffix, label }: StatsCounterProps) {
-  const [count, setCount] = useState(0);
+  const [display, setDisplay] = useState(0);
+  const spring = useSpring(0, { stiffness: 95, damping: 18 });
 
   useEffect(() => {
-    const duration = 1200;
-    const start = performance.now();
-    const animate = (time: number) => {
-      const progress = Math.min((time - start) / duration, 1);
-      setCount(Math.floor(value * progress));
-      if (progress < 1) requestAnimationFrame(animate);
-    };
-    requestAnimationFrame(animate);
-  }, [value]);
+    spring.set(value);
+  }, [spring, value]);
+
+  useMotionValueEvent(spring, 'change', (latest) => {
+    setDisplay(Math.floor(latest));
+  });
+
+  const formatted = useMemo(() => `${display}${suffix}`, [display, suffix]);
 
   return (
-    <div>
-      <p className="text-3xl font-semibold text-white">{count}{suffix}</p>
+    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+      <p className="text-3xl font-semibold text-white">{formatted}</p>
       <p className="text-sm text-slate-200">{label}</p>
-    </div>
+    </motion.div>
   );
 }
