@@ -1,43 +1,18 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-
-const taglines: Record<string, string> = {
-  SaaS: 'Turn retention signals into measurable expansion.',
-  Retail: 'Convert every checkout into a growth opportunity.',
-  Healthcare: 'Bring clarity, speed, and confidence to every care decision.',
-  Finance: 'Make margin, risk, and forecasting feel instantly clear.',
-};
 
 export default function OnboardingPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [companyName, setCompanyName] = useState('');
   const [industry, setIndustry] = useState('SaaS');
-  const [tagline, setTagline] = useState('');
   const [status, setStatus] = useState('');
   const [file, setFile] = useState<File | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  const generatedTagline = useMemo(() => taglines[industry] || taglines.SaaS, [industry]);
-
-  useEffect(() => {
-    if (step !== 3) {
-      return;
-    }
-
-    setLoading(true);
-    const timeout = setTimeout(() => {
-      setTagline(generatedTagline);
-      setLoading(false);
-    }, 2000);
-
-    return () => clearTimeout(timeout);
-  }, [generatedTagline, step]);
 
   const uploadFirstFile = async () => {
     if (!file) {
@@ -55,21 +30,16 @@ export default function OnboardingPage() {
       return;
     }
 
-    setStatus('Upload complete. Moving to final setup.');
-    setStep(3);
-  };
+    setStatus('Upload complete. Finalizing your workspace...');
 
-  const completeOnboarding = async () => {
-    setStatus('Finishing onboarding...');
-
-    const response = await fetch('/api/onboarding', {
+    const onboardingResponse = await fetch('/api/onboarding', {
       method: 'POST',
       credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ companyName, industry, tagline, onboardingComplete: true }),
+      body: JSON.stringify({ companyName, industry, onboardingComplete: true }),
     });
 
-    if (!response.ok) {
+    if (!onboardingResponse.ok) {
       setStatus('We could not save your onboarding details. Please refresh and try again.');
       return;
     }
@@ -87,12 +57,12 @@ export default function OnboardingPage() {
       <Card className="w-full max-w-2xl border-white/10 bg-white/5 text-white">
         <CardHeader>
           <CardTitle>Welcome to your AURA onboarding</CardTitle>
-          <CardDescription className="text-slate-200">Complete the setup in three guided steps and unlock your premium workspace.</CardDescription>
+          <CardDescription className="text-slate-200">Complete the setup in two guided steps and unlock your premium workspace.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-100">
-            <span>Step {step} of 3</span>
-            <span>{step === 1 ? 'Company details' : step === 2 ? 'Upload first file' : 'AI tagline'}</span>
+            <span>Step {step} of 2</span>
+            <span>{step === 1 ? 'Company details' : 'Upload first file'}</span>
           </div>
 
           {step === 1 && (
@@ -115,24 +85,8 @@ export default function OnboardingPage() {
               <p className="text-sm text-slate-200">{status}</p>
               <div className="flex gap-3">
                 <Button variant="outline" onClick={() => setStep(1)}>Back</Button>
-                <Button onClick={uploadFirstFile}>Upload and continue</Button>
+                <Button onClick={uploadFirstFile}>Finish onboarding</Button>
               </div>
-            </div>
-          )}
-
-          {step === 3 && (
-            <div className="space-y-4">
-              <div className="rounded-2xl border border-aura-cyan/20 bg-aura-cyan/10 p-4">
-                {loading ? (
-                  <p className="text-sm text-slate-100">Generating your personalised tagline...</p>
-                ) : (
-                  <div>
-                    <p className="text-sm uppercase tracking-[0.2em] text-aura-cyan">AI-generated tagline</p>
-                    <p className="mt-3 text-xl font-semibold text-white">{tagline || generatedTagline}</p>
-                  </div>
-                )}
-              </div>
-              <Button className="w-full" onClick={completeOnboarding}>Finish onboarding</Button>
             </div>
           )}
         </CardContent>

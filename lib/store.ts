@@ -1,7 +1,9 @@
 import type { AnalysisResult, ChatMessage, Dataset, Notification, TeamMember, User, UserSettings } from './types';
 import { decodeToken } from './auth';
 
-export const users: User[] = [];
+type GlobalStore = typeof globalThis & { __AURA_USERS__?: User[] };
+
+export const users: User[] = ((globalThis as GlobalStore).__AURA_USERS__ ??= []);
 export const datasets: Dataset[] = [];
 export const analyses: AnalysisResult[] = [];
 export const notifications: Notification[] = [];
@@ -50,6 +52,27 @@ export function getUserById(id: string) {
   return users.find((user) => user.id === id);
 }
 
+function getOrCreateUser(email: string, payload?: Partial<User> & { name?: string }) {
+  const existing = getUserByEmail(email);
+  if (existing) {
+    return existing;
+  }
+
+  const createdUser: User = {
+    id: payload?.id || `user-${Date.now()}`,
+    name: payload?.name || email,
+    email,
+    passwordHash: payload?.passwordHash || '',
+    plan: payload?.plan === 'starter' || payload?.plan === 'pro' || payload?.plan === 'enterprise' ? payload.plan : 'starter',
+    usage: typeof payload?.usage === 'number' ? payload.usage : 0,
+    createdAt: payload?.createdAt || new Date().toISOString(),
+    settings: normalizeUserSettings(payload?.settings),
+  };
+
+  users.push(createdUser);
+  return createdUser;
+}
+
 export function getAuthenticatedUser(request: Request) {
   const cookieHeader = request.headers.get('cookie') || '';
   const match = cookieHeader.match(/(?:^|; )auth-token=([^;]+)/);
@@ -60,12 +83,20 @@ export function getAuthenticatedUser(request: Request) {
     return null;
   }
 
-  const decoded = decodeToken(decodeURIComponent(rawToken));
+  const decoded = decodeToken(decodeURIComponent(rawToken)) as { email?: string; name?: string; plan?: string; usage?: number; createdAt?: string; settings?: Partial<UserSettings> } | null;
   if (!decoded?.email) {
     return null;
   }
 
-  return getUserByEmail(String(decoded.email));
+  const plan = decoded.plan === 'starter' || decoded.plan === 'pro' || decoded.plan === 'enterprise' ? decoded.plan : 'starter';
+
+  return getOrCreateUser(String(decoded.email), {
+    name: decoded.name,
+    plan,
+    usage: decoded.usage,
+    createdAt: decoded.createdAt,
+    settings: normalizeUserSettings(decoded.settings),
+  });
 }
 
 export function setUsageForUser(email: string, usage: number) {
@@ -137,18 +168,12 @@ export function markNotificationAsRead(id: string, email: string) {
 }
 
 export function updateUserSettings(email: string, settings: Partial<UserSettings>) {
-  const user = getUserByEmail(email);
-  if (!user) {
-    return;
-  }
+  const user = getOrCreateUser(email);
   user.settings = normalizeUserSettings(settings);
 }
 
 export function updateOnboarding(email: string, payload: { companyName?: string; industry?: string; tagline?: string; onboardingComplete?: boolean }) {
-  const user = getUserByEmail(email);
-  if (!user) {
-    return;
-  }
+  const user = getOrCreateUser(email);
   if (payload.companyName) {
     user.companyName = payload.companyName;
   }
