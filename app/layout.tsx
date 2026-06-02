@@ -1,22 +1,27 @@
-import './globals.css';
-import type { Metadata } from 'next';
-import { Inter, Playfair_Display } from 'next/font/google';
-import { AppShell } from '@/components/app-shell';
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+import './globals.css'
+import { ThemeProvider } from 'next-themes'
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
-const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' });
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata: Metadata = {
-  title: 'AURA Platform',
-  description: 'AI-powered business intelligence for modern operators.',
-};
+  title: 'AURA – Your AI Business Partner',
+  description: 'Turn your business data into billion‑dollar decisions.',
+}
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${playfair.variable}`}>
-      <body className={`${inter.className} bg-transparent`}>
-        <AppShell>{children}</AppShell>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.variable} font-sans`}>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
-  );
+  )
 }

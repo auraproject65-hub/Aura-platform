@@ -1,23 +1,12 @@
-import { NextResponse } from 'next/server';
-import { addAnalysis, getDatasetById, getLatestAnalysis } from '@/lib/store';
-import { runMockAI } from '@/lib/mockAI';
+import { NextRequest, NextResponse } from 'next/server';
+import { generateAnalysis } from '@/lib/mockAI';
 
-export async function GET() {
-  const analysis = getLatestAnalysis();
-  return NextResponse.json({ analysis });
-}
-
-export async function POST(request: Request) {
-  const body = await request.json();
-  const { datasetId, industry } = body;
-
-  const dataset = getDatasetById(datasetId);
-  if (!dataset) {
-    return NextResponse.json({ error: 'Dataset not found' }, { status: 404 });
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const result = generateAnalysis([], body.industry || 'retail', body.companyName);
+    return NextResponse.json(result);
+  } catch (e) {
+    return NextResponse.json({ error: 'Analysis failed' }, { status: 500 });
   }
-
-  const analysis = runMockAI(dataset, industry || dataset.industry);
-  addAnalysis(analysis);
-
-  return NextResponse.json({ ok: true, analysis });
 }
