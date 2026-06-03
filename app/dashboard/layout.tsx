@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import CommandPalette from '@/components/CommandPalette/CommandPalette';
@@ -20,11 +21,24 @@ function isAdminFromCookie() {
 }
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
   const [isAdmin, setIsAdmin] = useState(false);
+  const [authorized, setAuthorized] = useState(false);
 
   useEffect(() => {
+    const match = document.cookie.match(/(?:^|; )auth-token=([^;]+)/);
+    const token = match ? decodeURIComponent(match[1]) : null;
+    if (!token) {
+      router.push('/auth/login');
+      return;
+    }
+    setAuthorized(true);
     setIsAdmin(isAdminFromCookie());
-  }, []);
+  }, [router]);
+
+  if (!authorized) {
+    return <div className="flex h-screen items-center justify-center text-white">Loading...</div>;
+  }
 
   return (
     <div className="flex h-screen">

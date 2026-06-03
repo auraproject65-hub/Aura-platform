@@ -15,7 +15,15 @@ export const verifyPassword = async (password: string, hashedPassword: string) =
 
 export const createUser = async (email: string, password: string, name: string, companyName: string) => {
   const hashedPassword = await hashPassword(password);
-  const user = { id: Date.now().toString(), email, password: hashedPassword, name, companyName, role: 'user' };
+  const user = {
+    id: Date.now().toString(),
+    email,
+    password: hashedPassword,
+    name,
+    companyName,
+    role: 'user',
+    createdAt: new Date().toISOString(),
+  };
   users.push(user);
   return user;
 };
@@ -30,10 +38,14 @@ export const generateToken = (userId: string, email: string, role = 'user') => {
 
 export const verifyToken = (token: string) => {
   try {
-    return jwt.verify(token, JWT_SECRET) as { userId: string };
+    return jwt.verify(token, JWT_SECRET) as { userId: string; email?: string; role?: string };
   } catch {
     return null;
   }
+};
+
+export const isAdmin = (email: string) => {
+  return email === 'edwin@aura.ai' || email === 'admin@aura.ai' || email === 'owusueddie1@gmail.com';
 };
 
 export function decodeToken(token: string) {
