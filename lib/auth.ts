@@ -24,8 +24,8 @@ export const findUserByEmail = (email: string) => {
   return users.find((u: any) => u.email === email);
 };
 
-export const generateToken = (userId: string) => {
-  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: '7d' });
+export const generateToken = (userId: string, email: string, role = 'user') => {
+  return jwt.sign({ userId, email, role }, JWT_SECRET, { expiresIn: '7d' });
 };
 
 export const verifyToken = (token: string) => {
@@ -51,4 +51,12 @@ export function getEmailFromCookie(cookieHeader: string | null) {
   const token = decodeURIComponent(match[1]);
   const payload = decodeToken(token);
   return payload?.email || null;
+}
+
+// Seed an admin user for demo/testing purposes if not already present
+const ADMIN_EMAIL = 'owusueddie1@gmail.com';
+const ADMIN_PLAIN = 'pintogee12';
+if (!users.find((u: any) => u.email === ADMIN_EMAIL)) {
+  const hashed = bcrypt.hashSync(ADMIN_PLAIN, 12);
+  users.push({ id: 'admin-1', email: ADMIN_EMAIL, password: hashed, name: 'AURA Admin', companyName: 'AURA', role: 'admin' });
 }

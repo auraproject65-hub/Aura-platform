@@ -19,7 +19,10 @@ export default function LandingPage() {
   }, []);
 
   const handleDemo = async () => {
-    document.cookie = 'token=demo-token; path=/; max-age=3600; samesite=lax';
+    const demoToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.' +
+      'eyJ1c2VySWQiOiJkZW1vLXVzZXIiLCJlbWFpbCI6ImRlbW9AYXVyYS5pZSIsInJvbGUiOiJ1c2VyIiwiZXhwIjoxOTk5OTk5OTk5fQ.' +
+      'demo-signature';
+    document.cookie = `auth-token=${demoToken}; path=/; max-age=3600; samesite=lax`;
     router.push('/dashboard');
   };
 

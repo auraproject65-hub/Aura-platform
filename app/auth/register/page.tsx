@@ -18,7 +18,7 @@ export default function RegisterPage() {
     });
     const data = await res.json();
     if (!res.ok) { setError(data.error); return; }
-    document.cookie = `token=${data.token}; path=/; max-age=604800; samesite=lax;`;
+    document.cookie = `auth-token=${data.token}; path=/; max-age=604800; samesite=lax;`;
     router.push('/dashboard');
   };
 
