@@ -8,6 +8,7 @@
     --background: 248 12% 8%;
     --foreground: 210 40% 98%;
   }
+
   body {
     @apply bg-aura-navy text-aura-offwhite font-sans antialiased;
   }
@@ -21,13 +22,28 @@
 }
 
 .glass-card {
-  @apply glass p-6 rounded-2xl;
+  @apply glass p-6 rounded-2xl transition-all duration-300 hover:shadow-lg hover:shadow-aura-teal/5;
 }
 
 .btn-primary {
-  @apply bg-aura-teal text-white font-medium py-3 px-6 rounded-full shadow-lg hover:bg-opacity-90 transition-all duration-300;
+  @apply bg-aura-teal text-white font-medium py-3 px-6 rounded-full shadow-lg hover:bg-opacity-90 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98];
 }
 
 .btn-gold {
-  @apply border border-aura-gold text-aura-gold font-medium py-3 px-6 rounded-full hover:bg-aura-gold/10 transition-all duration-300;
+  @apply border border-aura-gold text-aura-gold font-medium py-3 px-6 rounded-full hover:bg-aura-gold/10 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98];
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+main {
+  animation: fadeIn 0.5s ease-out;
 }

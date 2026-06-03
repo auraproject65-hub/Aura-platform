@@ -1,34 +1,34 @@
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { WARRANT_CANARY_TEXT, DATA_SOVEREIGNTY_TEXT } from '@/lib/legal';
 
 export default function SecurityPage() {
+  const today = new Date().toISOString().split('T')[0];
+
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,#0B0E14,#111827)] px-6 py-12 text-foreground lg:px-12">
-      <div className="mx-auto max-w-4xl">
-        <p className="text-sm uppercase tracking-[0.3em] text-aura-cyan">Security</p>
-        <h1 className="mt-4 font-display text-4xl font-semibold">Security that feels as premium as the platform itself.</h1>
-        <p className="mt-4 text-slate-200">This page provides a refined trust center experience while your full compliance and security details are finalized.</p>
-        <div className="mt-8 grid gap-4 md:grid-cols-3">
-          {[
-            ['SOC 2 readiness', 'Controls, process maturity, and governance'],
-            ['Encryption by default', 'Protecting data in transit and at rest'],
-            ['Access governance', 'Role-based controls and secure collaboration'],
-          ].map(([title, description]) => (
-            <Card key={title} className="text-white">
-              <CardHeader>
-                <CardTitle>{title}</CardTitle>
-                <CardDescription className="text-slate-200">{description}</CardDescription>
-              </CardHeader>
-            </Card>
-          ))}
-        </div>
-        <div className="mt-8">
-          <Button asChild>
-            <Link href="/contact">Discuss security requirements</Link>
-          </Button>
-        </div>
-      </div>
-    </main>
+    <div className="min-h-screen p-8 max-w-4xl mx-auto space-y-8">
+      <h1 className="text-3xl font-serif">Trust & Security</h1>
+      
+      <section className="glass-card space-y-4">
+        <h2 className="text-xl font-semibold">Warrant Canary</h2>
+        <p className="text-sm text-gray-400 italic">{WARRANT_CANARY_TEXT(today)}</p>
+      </section>
+
+      <section className="glass-card space-y-4">
+        <h2 className="text-xl font-semibold">Data Sovereignty Promise</h2>
+        <p className="text-sm text-gray-300">{DATA_SOVEREIGNTY_TEXT}</p>
+      </section>
+
+      <section className="glass-card space-y-4">
+        <h2 className="text-xl font-semibold">Security Measures</h2>
+        <ul className="list-disc list-inside text-sm text-gray-300 space-y-2">
+          <li>All data encrypted in transit (TLS 1.3) and at rest (AES-256).</li>
+          <li>Single Sign-On (Google, Microsoft, Azure AD).</li>
+          <li>Two-factor authentication available for all accounts.</li>
+          <li>Role-based access control (Admin, Analyst, Viewer).</li>
+          <li>Client-facing audit log visible to Enterprise accounts.</li>
+          <li>EU data residency option for GDPR compliance.</li>
+          <li>Optional code escrow add-on for business continuity.</li>
+        </ul>
+      </section>
+    </div>
   );
 }

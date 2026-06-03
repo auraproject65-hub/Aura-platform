@@ -1,0 +1,16 @@
+{
+  "name": "AURA – Your AI Business Partner",
+  "short_name": "AURA",
+  "description": "Turn your business data into billion‑dollar decisions.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A0F1A",
+  "theme_color": "#0D9488",
+  "icons": [
+    {
+      "src": "/images/aura-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

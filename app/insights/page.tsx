@@ -1,13 +1,13 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import Watermark from '@/components/Watermark/Watermark';
 
 export default function InsightsPage() {
   const [analysis, setAnalysis] = useState<any>(null);
   const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
-    // Simulate fetching latest analysis (in real app, from API)
     const fetchAnalysis = async () => {
       const res = await fetch('/api/analytics/latest');
       const data = await res.json();
@@ -19,7 +19,7 @@ export default function InsightsPage() {
   if (!analysis) return <div className="p-8">Loading insights...</div>;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative">
       <div className="flex gap-4 border-b border-white/10 pb-2">
         {['overview', 'revenue', 'expenses', 'benchmarks', 'risk'].map(tab => (
           <button
@@ -34,7 +34,7 @@ export default function InsightsPage() {
 
       {activeTab === 'overview' && (
         <div className="grid grid-cols-2 gap-4">
-          <div className="glass-card">
+          <div className="glass-card relative">
             <h3 className="text-lg font-semibold">12‑Month Forecast</h3>
             <ResponsiveContainer width="100%" height={200}>
               <LineChart data={analysis.monthly_revenue_forecast}>
@@ -44,6 +44,7 @@ export default function InsightsPage() {
                 <Line type="monotone" dataKey="revenue" stroke="#0D9488" strokeWidth={2} />
               </LineChart>
             </ResponsiveContainer>
+            <Watermark />
           </div>
           <div className="glass-card">
             <h3 className="text-lg font-semibold">KPI Snapshot</h3>

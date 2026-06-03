@@ -1,5 +1,6 @@
 "use client";
 import { useState } from 'react';
+import { AI_DISCLAIMER } from '@/lib/legal';
 
 export default function DataRoom() {
   const [file, setFile] = useState<File | null>(null);
@@ -9,9 +10,7 @@ export default function DataRoom() {
     if (!file) return;
     const formData = new FormData();
     formData.append('file', file);
-    const res = await fetch('/api/upload', { method: 'POST', body: formData });
-    const data = await res.json();
-    // Simulate analysis
+    await fetch('/api/upload', { method: 'POST', body: formData });
     const analysisRes = await fetch('/api/analysis', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -27,12 +26,14 @@ export default function DataRoom() {
       <div className="glass-card">
         <input type="file" onChange={e => setFile(e.target.files?.[0] || null)} className="mb-4" />
         <button onClick={handleUpload} className="btn-primary">Run AURA Analysis</button>
+        <p className="text-xs text-gray-500 mt-3">{AI_DISCLAIMER}</p>
       </div>
       {result && (
         <div className="glass-card mt-6">
           <p className="text-aura-gold">Analysis Complete</p>
           <p>Yearly Projection: ${result.yearly_total_projection}</p>
           <button className="btn-primary mt-4">View Full Premium Report →</button>
+          <p className="text-xs text-gray-500 mt-3">{AI_DISCLAIMER}</p>
         </div>
       )}
     </div>
