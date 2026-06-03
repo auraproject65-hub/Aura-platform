@@ -1,8 +1,9 @@
 "use client";
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { getDemoAnalysis } from '@/lib/demo';
 
 export default function LandingPage() {
   const router = useRouter();
@@ -19,26 +20,25 @@ export default function LandingPage() {
     return () => clearInterval(interval);
   }, []);
 
-  const handleDemo = async () => {
-    const demoToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.' +
-      'eyJ1c2VySWQiOiJkZW1vLXVzZXIiLCJlbWFpbCI6ImRlbW9AYXVyYS5pZSIsInJvbGUiOiJ1c2VyIiwiZXhwIjoxOTk5OTk5OTk5fQ.' +
-      'demo-signature';
-    document.cookie = `auth-token=${demoToken}; path=/; max-age=3600; samesite=lax`;
+  const handleDemo = () => {
+    // Save demo analysis in localStorage so Insights shows data
+    const demoAnalysis = getDemoAnalysis();
+    localStorage.setItem('aura_latest_analysis', JSON.stringify(demoAnalysis));
+    // Set a demo token
+    localStorage.setItem('aura_token', 'demo-token');
     router.push('/dashboard');
   };
 
   return (
     <main className="min-h-screen bg-aura-navy text-white overflow-hidden">
       <section className="relative flex flex-col items-center justify-center text-center min-h-screen px-4">
-        <div className="absolute inset-0 -z-10 opacity-20">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-aura-teal/20 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-aura-gold/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute inset-0 -z-10">
+          <Image src="/images/aura-banner.jpg" alt="AURA Banner" fill className="object-cover opacity-30" priority />
+          <div className="absolute inset-0 bg-black/50" />
         </div>
-
         <div className="mb-8">
-          <Image src="/images/aura-logo.svg" alt="AURA" width={140} height={48} priority />
+          <Image src="/images/aura-logo.png" alt="AURA" width={120} height={48} priority />
         </div>
-
         <h1 className="text-5xl md:text-7xl font-serif mb-6 max-w-4xl">Your data has more to say.</h1>
         <p className="text-lg md:text-xl text-gray-300 max-w-2xl mb-10">
           AURA is the AI business partner that reads your company numbers and reveals exactly what to do next.
@@ -47,8 +47,7 @@ export default function LandingPage() {
           <Link href="/auth/register" className="btn-primary text-lg px-8 py-4">Start Free Trial</Link>
           <button onClick={handleDemo} className="btn-gold text-lg px-8 py-4">See AURA in Action</button>
         </div>
-
-        <div className="mt-20 grid grid-cols-1 sm:grid-cols-3 gap-8 text-center max-w-3xl w-full">
+        <div className="mt-20 grid grid-cols-3 gap-8 text-center max-w-3xl w-full">
           <div>
             <p className="text-3xl font-bold text-aura-teal">{stats.companies.toLocaleString()}+</p>
             <p className="text-sm text-gray-400">Companies Empowered</p>

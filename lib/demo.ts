@@ -1,5 +1,5 @@
 import { generateAnalysis } from '@/lib/mockAI';
 
-export const getDemoData = () => {
+export const getDemoAnalysis = () => {
   return generateAnalysis({ industry: 'retail', companyName: 'Acme Retail' });
 };

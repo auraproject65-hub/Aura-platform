@@ -8,24 +8,36 @@ export default function InsightsPage() {
   const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
-    const fetchAnalysis = async () => {
-      const res = await fetch('/api/analytics/latest');
-      const data = await res.json();
-      setAnalysis(data);
-    };
-    fetchAnalysis();
+    // Try to load latest analysis from localStorage
+    const stored = typeof window !== 'undefined' ? localStorage.getItem('aura_latest_analysis') : null;
+    if (stored) {
+      try {
+        setAnalysis(JSON.parse(stored));
+      } catch {}
+    }
+    // Also try fetching from API if nothing in storage (fallback)
+    if (!stored) {
+      const fetchAnalysis = async () => {
+        try {
+          const res = await fetch('/api/analytics/latest');
+          const data = await res.json();
+          setAnalysis(data);
+        } catch {}
+      };
+      fetchAnalysis();
+    }
   }, []);
 
-  if (!analysis) return <div className="p-8">Loading insights...</div>;
+  if (!analysis) return <div className="p-8">No analysis yet. Run one from the Data Room.</div>;
 
   return (
     <div className="space-y-6 relative">
-      <div className="flex gap-4 border-b border-white/10 pb-2">
-        {['overview', 'revenue', 'expenses', 'benchmarks', 'risk'].map(tab => (
+      <div className="flex gap-4 border-b border-white/10 pb-2 overflow-x-auto">
+        {['overview', 'revenue', 'expenses', 'benchmarks', 'risk', 'cohort', 'heatmap'].map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 rounded-t-lg ${activeTab === tab ? 'bg-aura-teal text-white' : 'text-gray-400 hover:text-white'}`}
+            className={`capitalize px-4 py-2 rounded-t-lg whitespace-nowrap ${activeTab === tab ? 'bg-aura-teal text-white' : 'text-gray-400 hover:text-white'}`}
           >
             {tab}
           </button>
@@ -49,7 +61,7 @@ export default function InsightsPage() {
           <div className="glass-card">
             <h3 className="text-lg font-semibold">KPI Snapshot</h3>
             <div className="grid grid-cols-2 gap-2 mt-4">
-              {Object.entries(analysis.kpi_snapshot).map(([key, value]: any) => (
+              {analysis.kpi_snapshot && Object.entries(analysis.kpi_snapshot).map(([key, value]: any) => (
                 <div key={key} className="p-2">
                   <p className="text-sm text-gray-400">{key}</p>
                   <p className="text-xl font-bold">{value}</p>
@@ -57,65 +69,52 @@ export default function InsightsPage() {
               ))}
             </div>
           </div>
-          <div className="glass-card col-span-2">
-            <h3 className="text-lg font-semibold">Strengths & Loopholes</h3>
-            <div className="grid grid-cols-2 gap-4 mt-2">
-              <ul className="list-disc list-inside text-green-400">
-                {analysis.strengths.map((s: string, i: number) => <li key={i}>{s}</li>)}
-              </ul>
-              <ul className="list-disc list-inside text-red-400">
-                {analysis.loopholes.map((l: string, i: number) => <li key={i}>{l}</li>)}
-              </ul>
+          {analysis.expert_notes && (
+            <div className="glass-card col-span-2">
+              <h3 className="text-lg font-semibold text-aura-gold">Expert Panel Review</h3>
+              {analysis.expert_notes.map((note: any, i: number) => (
+                <div key={i} className="flex items-start gap-3 mt-2">
+                  <div className="w-8 h-8 rounded-full bg-aura-teal flex items-center justify-center text-xs font-bold">{note.name[0]}</div>
+                  <div>
+                    <p className="text-sm font-medium">{note.name}, {note.role}</p>
+                    <p className="text-sm text-gray-400 italic">"{note.note}"</p>
+                  </div>
+                </div>
+              ))}
             </div>
+          )}
+        </div>
+      )}
+
+      {activeTab === 'cohort' && (
+        <div className="glass-card">
+          <h3 className="text-lg font-semibold">Cohort Analysis (Demo)</h3>
+          <p className="text-gray-400 mt-2">Shows user retention by cohort. Upgrade to Pro for full interactive charts.</p>
+          <div className="grid grid-cols-4 gap-2 mt-4">
+            {['Week 1', 'Week 2', 'Week 3', 'Week 4'].map((week, i) => (
+              <div key={week} className="p-3 bg-black/20 rounded text-center">
+                <p className="text-xs text-gray-400">{week}</p>
+                <p className="text-lg font-bold">{100 - i * 12}%</p>
+              </div>
+            ))}
           </div>
         </div>
       )}
 
-      {activeTab === 'revenue' && (
+      {activeTab === 'heatmap' && (
         <div className="glass-card">
-          <h3 className="text-lg font-semibold">Revenue Deep Dive</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={analysis.monthly_revenue_forecast}>
-              <XAxis dataKey="month" stroke="#ccc" />
-              <YAxis stroke="#ccc" />
-              <Tooltip />
-              <Bar dataKey="revenue" fill="#0D9488" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      )}
-
-      {activeTab === 'risk' && (
-        <div className="glass-card">
-          <h3 className="text-lg font-semibold">Decision Matrix & Risk Factors</h3>
-          <div className="overflow-x-auto mt-4">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="border-b border-white/10">
-                  <th className="p-2">Option</th>
-                  <th className="p-2">Advantages</th>
-                  <th className="p-2">Disadvantages</th>
-                  <th className="p-2">Impact</th>
-                  <th className="p-2">Score</th>
-                </tr>
-              </thead>
-              <tbody>
-                {analysis.decision_matrix.map((opt: any, i: number) => (
-                  <tr key={i} className="border-b border-white/5">
-                    <td className="p-2">{opt.option}</td>
-                    <td className="p-2 text-sm">{opt.advantages}</td>
-                    <td className="p-2 text-sm">{opt.disadvantages}</td>
-                    <td className="p-2 text-sm">{opt.financialImpact}</td>
-                    <td className="p-2">{opt.score.toFixed(1)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <h3 className="text-lg font-semibold">Revenue Heatmap (Demo)</h3>
+          <p className="text-gray-400 mt-2">Monthly revenue intensity by product category. Upgrade to Pro for full view.</p>
+          <div className="grid grid-cols-4 gap-1 mt-4">
+            {Array.from({length: 12}).map((_, i) => (
+              <div key={i} className="h-8 rounded-sm" style={{ backgroundColor: `rgba(13,148,136,${0.2 + Math.random() * 0.6})` }} />
+            ))}
           </div>
+          <p className="text-xs text-gray-500 mt-2">Jan – Dec intensity</p>
         </div>
       )}
 
-      {/* Additional tabs for expenses, benchmarks, etc. can be similarly built */}
+      {/* other tabs kept simple for now */}
     </div>
   );
 }
