@@ -32,9 +32,9 @@ export default function LandingPage() {
   return (
     <main className="min-h-screen bg-aura-navy text-white overflow-hidden">
       <section className="relative flex flex-col items-center justify-center text-center min-h-screen px-4">
-        <div className="absolute inset-0 -z-10">
-          <Image src="/images/aura-banner.jpg" alt="AURA Banner" fill className="object-cover opacity-30" priority />
-          <div className="absolute inset-0 bg-black/50" />
+        <div className="absolute inset-0 -z-10 opacity-20">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-aura-teal/20 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-aura-gold/10 rounded-full blur-3xl animate-pulse" />
         </div>
         <div className="mb-8">
           <Image src="/images/aura-logo.png" alt="AURA" width={120} height={48} priority />
