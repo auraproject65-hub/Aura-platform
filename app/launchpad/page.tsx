@@ -7,7 +7,6 @@ export default function LaunchpadPage() {
   const [result, setResult] = useState<any>(null);
 
   const analyze = async () => {
-    // Simulate different analysis based on input type
     let res;
     if (inputType === 'url') {
       res = {
@@ -19,7 +18,6 @@ export default function LaunchpadPage() {
         expert_notes: [{ name: "Ms. Yuki Tanaka", role: "Startup Advisor", note: "Your website tells a story. Add a call to action to make it convert." }]
       };
     } else {
-      // existing mock call
       const response = await fetch('/api/launchpad', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(inputType === 'url' ? { url: value } : { description: value }),
@@ -32,17 +30,17 @@ export default function LaunchpadPage() {
   return (
     <div className="space-y-6 max-w-2xl">
       <h2 className="text-2xl font-serif">Launchpad</h2>
-      <p className="text-gray-400">Not sure if your business idea is ready? Let AURA's startup experts review it.</p>
+      <p className="text-aura-muted">Not sure if your business idea is ready? Let AURA's startup experts review it.</p>
       <div className="glass-card space-y-4">
         <div className="flex gap-4">
           {['description', 'url', 'pitch'].map(t => (
-            <button key={t} onClick={() => setInputType(t as any)} className={`px-4 py-2 rounded ${inputType === t ? 'bg-aura-teal text-white' : 'bg-gray-700'}`}>
+            <button key={t} onClick={() => setInputType(t as any)} className={`px-4 py-2 rounded ${inputType === t ? 'bg-aura-gold text-aura-base' : 'bg-aura-surface text-aura-muted'}`}>
               {t === 'description' ? 'Describe Idea' : t === 'url' ? 'Website URL' : 'Pitch Deck'}
             </button>
           ))}
         </div>
         <textarea
-          className="w-full bg-transparent border border-gray-600 rounded-lg p-3 h-32"
+          className="w-full bg-transparent border border-white/10 rounded-lg p-3 h-32 text-aura-offwhite placeholder-aura-muted focus:border-aura-gold/50"
           placeholder={inputType === 'url' ? 'https://...' : 'Describe your business idea...'}
           value={value}
           onChange={e => setValue(e.target.value)}
@@ -56,7 +54,7 @@ export default function LaunchpadPage() {
           <div className="grid grid-cols-2 gap-3">
             {Object.entries(result.dimensions).map(([k, v]: any) => (
               <div key={k} className="p-2 bg-black/20 rounded">
-                <p className="text-sm text-gray-400 capitalize">{k}</p>
+                <p className="text-sm text-aura-muted capitalize">{k}</p>
                 <p className="text-lg font-bold">{v}</p>
               </div>
             ))}
@@ -68,7 +66,7 @@ export default function LaunchpadPage() {
             <div className="border-t border-white/10 pt-3">
               {result.expert_notes.map((n:any,i:number)=>(
                 <div key={i} className="flex items-start gap-2 mt-1">
-                  <div className="w-6 h-6 rounded-full bg-aura-teal flex items-center justify-center text-xs">{n.name[0]}</div>
+                  <div className="w-6 h-6 rounded-full bg-aura-gold/20 flex items-center justify-center text-xs">{n.name[0]}</div>
                   <p className="text-sm italic">"{n.note}" – {n.name}, {n.role}</p>
                 </div>
               ))}

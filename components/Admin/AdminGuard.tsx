@@ -8,16 +8,15 @@ export default function AdminGuard({ children }: { children: React.ReactNode }) 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('aura_token') : null;
+    const token = localStorage.getItem('aura_token');
     if (!token) {
       router.push('/auth/login');
       return;
     }
-
     try {
-      const payload = JSON.parse(atob(token.split('.')[1] || ''));
+      const payload = JSON.parse(atob(token.split('.')[1]));
       const adminEmails = ['owusueddie1@gmail.com', 'edwin@aura.ai', 'admin@aura.ai'];
-      if (payload && adminEmails.includes(payload.email)) {
+      if (adminEmails.includes(payload.email)) {
         setIsAdmin(true);
       } else {
         router.push('/dashboard');
@@ -30,6 +29,5 @@ export default function AdminGuard({ children }: { children: React.ReactNode }) 
 
   if (loading) return <div className="flex h-screen items-center justify-center"><p>Verifying...</p></div>;
   if (!isAdmin) return null;
-
   return <>{children}</>;
 }

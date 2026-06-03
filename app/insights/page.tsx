@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import Watermark from '@/components/Watermark/Watermark';
 
 export default function InsightsPage() {
@@ -8,14 +8,12 @@ export default function InsightsPage() {
   const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
-    // Try to load latest analysis from localStorage
-    const stored = typeof window !== 'undefined' ? localStorage.getItem('aura_latest_analysis') : null;
+    const stored = localStorage.getItem('aura_latest_analysis');
     if (stored) {
       try {
         setAnalysis(JSON.parse(stored));
       } catch {}
     }
-    // Also try fetching from API if nothing in storage (fallback)
     if (!stored) {
       const fetchAnalysis = async () => {
         try {
@@ -37,7 +35,7 @@ export default function InsightsPage() {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`capitalize px-4 py-2 rounded-t-lg whitespace-nowrap ${activeTab === tab ? 'bg-aura-teal text-white' : 'text-gray-400 hover:text-white'}`}
+            className={`capitalize px-4 py-2 rounded-t-lg whitespace-nowrap ${activeTab === tab ? 'bg-aura-gold text-aura-base' : 'text-aura-muted hover:text-white'}`}
           >
             {tab}
           </button>
@@ -53,7 +51,7 @@ export default function InsightsPage() {
                 <XAxis dataKey="month" stroke="#ccc" />
                 <YAxis stroke="#ccc" />
                 <Tooltip />
-                <Line type="monotone" dataKey="revenue" stroke="#0D9488" strokeWidth={2} />
+                <Line type="monotone" dataKey="revenue" stroke="#D4AF37" strokeWidth={2} />
               </LineChart>
             </ResponsiveContainer>
             <Watermark />
@@ -63,7 +61,7 @@ export default function InsightsPage() {
             <div className="grid grid-cols-2 gap-2 mt-4">
               {analysis.kpi_snapshot && Object.entries(analysis.kpi_snapshot).map(([key, value]: any) => (
                 <div key={key} className="p-2">
-                  <p className="text-sm text-gray-400">{key}</p>
+                  <p className="text-sm text-aura-muted">{key}</p>
                   <p className="text-xl font-bold">{value}</p>
                 </div>
               ))}
@@ -74,10 +72,10 @@ export default function InsightsPage() {
               <h3 className="text-lg font-semibold text-aura-gold">Expert Panel Review</h3>
               {analysis.expert_notes.map((note: any, i: number) => (
                 <div key={i} className="flex items-start gap-3 mt-2">
-                  <div className="w-8 h-8 rounded-full bg-aura-teal flex items-center justify-center text-xs font-bold">{note.name[0]}</div>
+                  <div className="w-8 h-8 rounded-full bg-aura-gold/20 flex items-center justify-center text-xs font-bold">{note.name[0]}</div>
                   <div>
                     <p className="text-sm font-medium">{note.name}, {note.role}</p>
-                    <p className="text-sm text-gray-400 italic">"{note.note}"</p>
+                    <p className="text-sm text-aura-muted italic">"{note.note}"</p>
                   </div>
                 </div>
               ))}
@@ -89,11 +87,11 @@ export default function InsightsPage() {
       {activeTab === 'cohort' && (
         <div className="glass-card">
           <h3 className="text-lg font-semibold">Cohort Analysis (Demo)</h3>
-          <p className="text-gray-400 mt-2">Shows user retention by cohort. Upgrade to Pro for full interactive charts.</p>
+          <p className="text-aura-muted mt-2">Shows user retention by cohort. Upgrade to Pro for full interactive charts.</p>
           <div className="grid grid-cols-4 gap-2 mt-4">
             {['Week 1', 'Week 2', 'Week 3', 'Week 4'].map((week, i) => (
               <div key={week} className="p-3 bg-black/20 rounded text-center">
-                <p className="text-xs text-gray-400">{week}</p>
+                <p className="text-xs text-aura-muted">{week}</p>
                 <p className="text-lg font-bold">{100 - i * 12}%</p>
               </div>
             ))}
@@ -104,17 +102,15 @@ export default function InsightsPage() {
       {activeTab === 'heatmap' && (
         <div className="glass-card">
           <h3 className="text-lg font-semibold">Revenue Heatmap (Demo)</h3>
-          <p className="text-gray-400 mt-2">Monthly revenue intensity by product category. Upgrade to Pro for full view.</p>
+          <p className="text-aura-muted mt-2">Monthly revenue intensity by product category. Upgrade to Pro for full view.</p>
           <div className="grid grid-cols-4 gap-1 mt-4">
             {Array.from({length: 12}).map((_, i) => (
-              <div key={i} className="h-8 rounded-sm" style={{ backgroundColor: `rgba(13,148,136,${0.2 + Math.random() * 0.6})` }} />
+              <div key={i} className="h-8 rounded-sm" style={{ backgroundColor: `rgba(212,175,55,${0.2 + Math.random() * 0.6})` }} />
             ))}
           </div>
-          <p className="text-xs text-gray-500 mt-2">Jan – Dec intensity</p>
+          <p className="text-xs text-aura-muted mt-2">Jan – Dec intensity</p>
         </div>
       )}
-
-      {/* other tabs kept simple for now */}
     </div>
   );
 }
