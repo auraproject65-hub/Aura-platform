@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -32,6 +33,10 @@ export default function LandingPage() {
         <div className="absolute inset-0 -z-10 opacity-20">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-aura-teal/20 rounded-full blur-3xl animate-pulse" />
           <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-aura-gold/10 rounded-full blur-3xl animate-pulse" />
+        </div>
+
+        <div className="mb-8">
+          <Image src="/images/aura-logo.svg" alt="AURA" width={140} height={48} priority />
         </div>
 
         <h1 className="text-5xl md:text-7xl font-serif mb-6 max-w-4xl">Your data has more to say.</h1>

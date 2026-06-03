@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import CommandPalette from '@/components/CommandPalette/CommandPalette';
 import { BarChart3, Upload, Lightbulb, Settings, Users, CreditCard, Briefcase, GraduationCap, MessageCircle, Grid3X3, Megaphone, Heart, Shield, Search, FileSearch, Coins, Bot, PenLine, MessageSquare } from 'lucide-react';
@@ -29,7 +30,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <div className="flex h-screen">
       <CommandPalette />
       <aside className="w-64 bg-aura-navy border-r border-white/5 flex flex-col p-4">
-        <h1 className="text-2xl font-serif text-aura-teal mb-8">AURA</h1>
+        <div className="mb-6 flex items-center gap-3">
+          <Image src="/images/aura-logo.svg" alt="AURA" width={100} height={28} priority />
+          <span className="text-2xl font-serif text-aura-teal">AURA</span>
+        </div>
         <nav className="flex flex-col gap-1 text-sm overflow-y-auto">
           <Link href="/dashboard" className="flex items-center gap-2 p-2 hover:bg-white/5 rounded-lg"><BarChart3 size={16}/> Overview</Link>
           <Link href="/data-room" className="flex items-center gap-2 p-2 hover:bg-white/5 rounded-lg"><Upload size={16}/> Data Room</Link>
